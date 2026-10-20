@@ -1,5 +1,7 @@
 # AWS Security & Governance Hardening Lab
 
+[![Validate governance lab](https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab/actions/workflows/ci.yml)
+
 **AWS Organizations · SCPs · GuardDuty · Security Hub CSPM · AWS Config · CloudTrail · Terraform · Python**
 
 A five-account governance model with deployable Terraform, shared audit storage, deny-based guardrails and repeatable offline security response exercises.
@@ -31,9 +33,11 @@ The supplied Terraform targets the commercial `aws` partition. Existing accounts
 
 Prerequisites: Python 3.11+; Terraform 1.9+ for infrastructure checks. The recorded local run uses Python 3.14 and Terraform 1.15.8.
 
-From this folder in PowerShell:
+### Windows PowerShell
 
 ```powershell
+git clone https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab.git
+cd AWS-Security-Governance-Hardening-Lab
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pip install -e . --no-build-isolation --no-deps
@@ -41,11 +45,26 @@ python -m venv .venv
 Start-Process .\reports\demo\report.html
 ```
 
-Linux/macOS: create the environment with `python3 -m venv .venv` and use `.venv/bin/python` for the remaining Python commands. Dependency/provider installation needs internet access; the installed offline exercise does not call AWS.
+If you already have the project locally, start with `python -m venv .venv` from its folder. Environment activation is optional.
+
+### Linux / macOS
+
+```bash
+git clone https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab.git
+cd AWS-Security-Governance-Hardening-Lab
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt -r requirements-dev.txt
+.venv/bin/python -m pip install -e . --no-build-isolation --no-deps
+.venv/bin/python -m governance_lab demo --output reports/demo
+```
+
+Open `reports/demo/report.html` in a browser. Dependency/provider installation needs internet access; the installed offline exercise does not call AWS.
 
 Expected output: **27/27 policy cases passed and 4/4 response exercises verified in memory**. Reports are generated as JSON, Markdown and standalone HTML. All findings, approvals and outcomes are explicitly labelled fictional.
 
 See the [sample report](examples/demo/report.md), [HTML report](examples/demo/report.html) and [JSON evidence](examples/demo/report.json). Download HTML from GitHub and open it locally to see its formatting.
+
+The reports include expected and observed policy decisions, severity-ranked findings, affected resources, risk and remediation guidance, and the simulated approval/verification history. JSON also retains the before/after state for each response exercise. Reusing an output directory replaces its report files.
 
 ## Architecture
 
@@ -117,11 +136,20 @@ To replay a modified fictional scenario:
   --output reports/replay
 ```
 
-Exit codes: `0` all requested checks passed; `1` a policy expectation, response verification or live configuration check failed; `2` invalid input, incomplete AWS reads or operational failure.
+| Exit code | Meaning |
+| --- | --- |
+| `0` | All requested checks passed within the declared scope |
+| `1` | A policy expectation, response verification or live configuration check failed |
+| `2` | Invalid input, incomplete AWS reads or an operational failure |
+
+For command options, run `python -m governance_lab --help` using the virtual environment's Python. The separate `verify-live` command reads an exported Terraform service inventory; its setup and required account context are documented in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Validate locally
 
 ```powershell
+terraform -chdir=infra/organization init -backend=false -input=false
+terraform -chdir=infra/log-archive init -backend=false -input=false
+terraform -chdir=infra/account-baseline init -backend=false -input=false
 .\.venv\Scripts\python.exe scripts/verify.py
 .\.venv\Scripts\python.exe -m pip_audit -r requirements.txt --strict --disable-pip --no-deps
 ```
@@ -153,3 +181,7 @@ scripts/verify.py        Local validation entry point
 ```
 
 This is a scoped governance lab. Production adoption requires authorised live validation, independent policy/security review, operational ownership and the organisation's approval process.
+
+## License
+
+[MIT](LICENSE).
