@@ -1,0 +1,55 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenySecurityControlTampering",
+      "Effect": "Deny",
+      "Action": [
+        "cloudtrail:StopLogging", "cloudtrail:DeleteTrail", "cloudtrail:UpdateTrail",
+        "cloudtrail:PutEventSelectors", "cloudtrail:PutInsightSelectors",
+        "config:StopConfigurationRecorder", "config:DeleteConfigurationRecorder",
+        "config:DeleteDeliveryChannel", "config:DeleteConfigRule",
+        "config:PutConfigurationRecorder", "config:PutDeliveryChannel", "config:PutConfigRule",
+        "guardduty:DeleteDetector", "guardduty:UpdateDetector",
+        "securityhub:DisableSecurityHub", "securityhub:BatchDisableStandards",
+        "securityhub:UpdateStandardsControl", "securityhub:BatchUpdateStandardsControlAssociations",
+        "securityhub:UpdateSecurityHubConfiguration"
+      ],
+      "Resource": "*",
+      "Condition": {"ArnNotEquals": {"aws:PrincipalArn": ${administrator_role_arns}}}
+    },
+    {
+      "Sid": "ProtectGovernanceAdministratorRoles",
+      "Effect": "Deny",
+      "Action": [
+        "iam:CreateRole", "iam:DeleteRole", "iam:UpdateAssumeRolePolicy",
+        "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy", "iam:PutRolePermissionsBoundary",
+        "iam:DeleteRolePermissionsBoundary", "iam:PassRole",
+        "iam:TagRole", "iam:UntagRole"
+      ],
+      "Resource": ${administrator_role_arns},
+      "Condition": {"ArnNotEquals": {"aws:PrincipalArn": ${administrator_role_arns}}}
+    },
+    {
+      "Sid": "DenyKeyDestructionWithoutGovernanceRole",
+      "Effect": "Deny",
+      "Action": ["kms:DisableKey", "kms:ScheduleKeyDeletion", "kms:PutKeyPolicy"],
+      "Resource": "*",
+      "Condition": {"ArnNotEquals": {"aws:PrincipalArn": ${administrator_role_arns}}}
+    },
+    {
+      "Sid": "DenyMemberDeparture",
+      "Effect": "Deny",
+      "Action": "organizations:LeaveOrganization",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyRootAccessKeyCreation",
+      "Effect": "Deny",
+      "Action": "iam:CreateAccessKey",
+      "Resource": "*",
+      "Condition": {"ArnLike": {"aws:PrincipalArn": "arn:aws:iam::*:root"}}
+    }
+  ]
+}

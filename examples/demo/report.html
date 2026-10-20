@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>AWS Security &amp; Governance Hardening Lab</title>
+<style>
+body{font:16px system-ui;max-width:1100px;margin:40px auto;padding:24px;background:#f3f6fa;color:#21324b}
+h1{font-size:38px}p,li{line-height:1.6}.banner{background:#fff0ce;padding:20px;border-left:5px solid #b77c00}
+.metrics{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.metric,article{background:white;padding:24px;border-radius:10px}
+.metric{flex:1}.metric b{font-size:30px;display:block}article{margin:18px 0;border-left:5px solid #c88b1e}
+.high{border-color:#c34f25}.critical{border-color:#b32243}table{width:100%;background:white;border-collapse:collapse}
+td,th{text-align:left;padding:10px;border-bottom:1px solid #ddd}code,pre{white-space:pre-wrap;overflow-wrap:anywhere}
+pre{font-size:12px;background:#eef2f7;padding:15px}summary{cursor:pointer}@media print{body{margin:0}article{break-inside:avoid}}
+</style></head><body><small>FIVE-ACCOUNT GOVERNANCE MODEL</small><h1>AWS Security &amp; Governance Hardening Lab</h1>
+<p class="banner"><strong>SYNTHETIC OFFLINE EXERCISE</strong><br>No AWS resources were deployed or changed. Findings, approvals and remediation outcomes are fictional.</p>
+<p>Status: passed | Completed: 2026-10-20T17:11:21.641932+00:00</p>
+<div class="metrics"><div class="metric"><b>27/27</b>Policy cases passed</div>
+<div class="metric"><b>4/4</b>Response exercises verified</div>
+<div class="metric"><b>4</b>Service event types supported</div></div>
+<h2>Policy evaluation</h2><p>Not denied by these SCPs does not mean access is granted. Other policies and organisation inheritance remain outside this evaluator.</p>
+<table><tr><th>Case</th><th>Decision</th><th>Pass</th></tr><tr><td>approved-region</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>outside-region</td><td>explicit_deny</td><td>True</td></tr><tr><td>secondary-approved-region</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>global-iam</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>global-route53</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>deny-cloudtrail-stoplogging</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-cloudtrail-deletetrail</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-config-stopconfigurationrecorder</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-config-putconfigurationrecorder</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-guardduty-deletedetector</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-guardduty-updatedetector</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-securityhub-disablesecurityhub</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-securityhub-batchdisablestandards</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-kms-schedulekeydeletion</td><td>explicit_deny</td><td>True</td></tr><tr><td>deny-kms-putkeypolicy</td><td>explicit_deny</td><td>True</td></tr><tr><td>approved-administrator-change</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>administrator-still-region-restricted</td><td>explicit_deny</td><td>True</td></tr><tr><td>governance-trust-protected</td><td>explicit_deny</td><td>True</td></tr><tr><td>governance-role-creation-protected</td><td>explicit_deny</td><td>True</td></tr><tr><td>workload-role-not-governance-role</td><td>not_denied_by_lab_scps</td><td>True</td></tr><tr><td>cannot-leave-organization</td><td>explicit_deny</td><td>True</td></tr><tr><td>root-access-key-blocked</td><td>explicit_deny</td><td>True</td></tr><tr><td>management-outside-scp-scope</td><td>outside_scp_scope</td><td>True</td></tr><tr><td>service-linked-role-outside-scp-scope</td><td>outside_scp_scope</td><td>True</td></tr><tr><td>lookalike-admin-not-exempt</td><td>explicit_deny</td><td>True</td></tr><tr><td>other-account-admin-not-exempt</td><td>explicit_deny</td><td>True</td></tr><tr><td>case-insensitive-actions</td><td>explicit_deny</td><td>True</td></tr></table>
+<h2>Findings and simulated response</h2><article class="high"><small>HIGH / aws.cloudtrail</small><h3>An attempt to stop audit logging was denied</h3><p><strong>Resource:</strong> <code>arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail</code></p><p><strong>Risk:</strong> A blocked attempt can still indicate misuse of credentials or an incorrect change process.</p><p><strong>Response:</strong> Verify continued logging, review the actor and denial reason, and preserve the event. A denial alone does not establish which policy caused it.</p><p><strong>Workflow:</strong> verified (simulation only)</p><details><summary>Evidence, approvals and before/after state</summary><pre>{
+  &quot;id&quot;: &quot;cloudtrail-blocked-tamper&quot;,
+  &quot;finding&quot;: {
+    &quot;id&quot;: &quot;8f04efcbfdcd748aedf5&quot;,
+    &quot;source&quot;: &quot;aws.cloudtrail&quot;,
+    &quot;account_id&quot;: &quot;444444444444&quot;,
+    &quot;region&quot;: &quot;eu-west-1&quot;,
+    &quot;resource&quot;: &quot;arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail&quot;,
+    &quot;issue&quot;: &quot;An attempt to stop audit logging was denied&quot;,
+    &quot;severity&quot;: &quot;high&quot;,
+    &quot;risk&quot;: &quot;A blocked attempt can still indicate misuse of credentials or an incorrect change process.&quot;,
+    &quot;remediation&quot;: &quot;Verify continued logging, review the actor and denial reason, and preserve the event. A denial alone does not establish which policy caused it.&quot;,
+    &quot;playbook&quot;: &quot;verify-blocked-tamper&quot;,
+    &quot;evidence&quot;: {
+      &quot;eventSource&quot;: &quot;cloudtrail.amazonaws.com&quot;,
+      &quot;eventName&quot;: &quot;StopLogging&quot;,
+      &quot;errorCode&quot;: &quot;AccessDenied&quot;,
+      &quot;userIdentity&quot;: {
+        &quot;arn&quot;: &quot;arn:aws:iam::444444444444:role/WorkloadOperator&quot;
+      },
+      &quot;requestParameters&quot;: {
+        &quot;name&quot;: &quot;arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail&quot;
+      }
+    },
+    &quot;synthetic&quot;: true
+  },
+  &quot;exercise&quot;: {
+    &quot;finding_id&quot;: &quot;8f04efcbfdcd748aedf5&quot;,
+    &quot;status&quot;: &quot;verified&quot;,
+    &quot;mode&quot;: &quot;simulation_only&quot;,
+    &quot;before&quot;: {
+      &quot;resource&quot;: &quot;arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;logging_enabled&quot;: true,
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;after&quot;: {
+      &quot;resource&quot;: &quot;arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;logging_enabled&quot;: true,
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;plan&quot;: {
+      &quot;playbook&quot;: &quot;verify-blocked-tamper&quot;,
+      &quot;resource&quot;: &quot;arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail&quot;,
+      &quot;changes&quot;: {},
+      &quot;execution&quot;: &quot;simulation_only&quot;
+    },
+    &quot;history&quot;: [
+      {
+        &quot;step&quot;: &quot;new&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;triaged&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;approved&quot;,
+        &quot;actor&quot;: &quot;demo-independent-reviewer&quot;,
+        &quot;reason&quot;: &quot;Approved fictional training scenario&quot;,
+        &quot;approval_mode&quot;: &quot;fictional_training&quot;
+      },
+      {
+        &quot;step&quot;: &quot;simulated&quot;,
+        &quot;actor&quot;: &quot;offline-engine&quot;
+      },
+      {
+        &quot;step&quot;: &quot;verified&quot;,
+        &quot;actor&quot;: &quot;offline-verifier&quot;
+      }
+    ]
+  }
+}</pre></details></article><article class="high"><small>HIGH / aws.guardduty</small><h3>UnauthorizedAccess:EC2/SSHBruteForce</h3><p><strong>Resource:</strong> <code>i-00000000000000001</code></p><p><strong>Risk:</strong> Suspected instance activity requires investigation and approved containment.</p><p><strong>Response:</strong> Review the sample finding, preserve evidence, and simulate assigning the approved quarantine security group.</p><p><strong>Workflow:</strong> verified (simulation only)</p><details><summary>Evidence, approvals and before/after state</summary><pre>{
+  &quot;id&quot;: &quot;guardduty-containment&quot;,
+  &quot;finding&quot;: {
+    &quot;id&quot;: &quot;16f2d47ab82ab1a32896&quot;,
+    &quot;source&quot;: &quot;aws.guardduty&quot;,
+    &quot;account_id&quot;: &quot;444444444444&quot;,
+    &quot;region&quot;: &quot;eu-west-1&quot;,
+    &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+    &quot;issue&quot;: &quot;UnauthorizedAccess:EC2/SSHBruteForce&quot;,
+    &quot;severity&quot;: &quot;high&quot;,
+    &quot;risk&quot;: &quot;Suspected instance activity requires investigation and approved containment.&quot;,
+    &quot;remediation&quot;: &quot;Review the sample finding, preserve evidence, and simulate assigning the approved quarantine security group.&quot;,
+    &quot;playbook&quot;: &quot;quarantine-ec2&quot;,
+    &quot;evidence&quot;: {
+      &quot;id&quot;: &quot;fictional-gd-001&quot;,
+      &quot;type&quot;: &quot;UnauthorizedAccess:EC2/SSHBruteForce&quot;,
+      &quot;severity&quot;: 8,
+      &quot;resource&quot;: {
+        &quot;instanceDetails&quot;: {
+          &quot;instanceId&quot;: &quot;i-00000000000000001&quot;
+        }
+      },
+      &quot;service&quot;: {
+        &quot;additionalInfo&quot;: {
+          &quot;sample&quot;: true
+        }
+      }
+    },
+    &quot;synthetic&quot;: true
+  },
+  &quot;exercise&quot;: {
+    &quot;finding_id&quot;: &quot;16f2d47ab82ab1a32896&quot;,
+    &quot;status&quot;: &quot;verified&quot;,
+    &quot;mode&quot;: &quot;simulation_only&quot;,
+    &quot;before&quot;: {
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;security_group_ids&quot;: [
+        &quot;sg-00000000000000001&quot;
+      ],
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;after&quot;: {
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;security_group_ids&quot;: [
+        &quot;sg-00000000000000002&quot;
+      ],
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;plan&quot;: {
+      &quot;playbook&quot;: &quot;quarantine-ec2&quot;,
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;changes&quot;: {
+        &quot;security_group_ids&quot;: [
+          &quot;sg-00000000000000002&quot;
+        ]
+      },
+      &quot;execution&quot;: &quot;simulation_only&quot;
+    },
+    &quot;history&quot;: [
+      {
+        &quot;step&quot;: &quot;new&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;triaged&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;approved&quot;,
+        &quot;actor&quot;: &quot;demo-independent-reviewer&quot;,
+        &quot;reason&quot;: &quot;Approved fictional training scenario&quot;,
+        &quot;approval_mode&quot;: &quot;fictional_training&quot;
+      },
+      {
+        &quot;step&quot;: &quot;simulated&quot;,
+        &quot;actor&quot;: &quot;offline-engine&quot;
+      },
+      {
+        &quot;step&quot;: &quot;verified&quot;,
+        &quot;actor&quot;: &quot;offline-verifier&quot;
+      }
+    ]
+  }
+}</pre></details></article><article class="high"><small>HIGH / aws.securityhub</small><h3>S3 bucket public access settings require review</h3><p><strong>Resource:</strong> <code>arn:aws:s3:::fictional-governance-bucket</code></p><p><strong>Risk:</strong> Unintended public bucket configuration can expose sensitive data.</p><p><strong>Response:</strong> Confirm the bucket&#x27;s purpose and simulate all four bucket Block Public Access settings.</p><p><strong>Workflow:</strong> verified (simulation only)</p><details><summary>Evidence, approvals and before/after state</summary><pre>{
+  &quot;id&quot;: &quot;securityhub-public-access&quot;,
+  &quot;finding&quot;: {
+    &quot;id&quot;: &quot;b3a0bc0a846968db04a7&quot;,
+    &quot;source&quot;: &quot;aws.securityhub&quot;,
+    &quot;account_id&quot;: &quot;444444444444&quot;,
+    &quot;region&quot;: &quot;eu-west-1&quot;,
+    &quot;resource&quot;: &quot;arn:aws:s3:::fictional-governance-bucket&quot;,
+    &quot;issue&quot;: &quot;S3 bucket public access settings require review&quot;,
+    &quot;severity&quot;: &quot;high&quot;,
+    &quot;risk&quot;: &quot;Unintended public bucket configuration can expose sensitive data.&quot;,
+    &quot;remediation&quot;: &quot;Confirm the bucket&#x27;s purpose and simulate all four bucket Block Public Access settings.&quot;,
+    &quot;playbook&quot;: &quot;block-public-s3&quot;,
+    &quot;evidence&quot;: {
+      &quot;findings&quot;: [
+        {
+          &quot;SchemaVersion&quot;: &quot;2018-10-08&quot;,
+          &quot;Id&quot;: &quot;fictional-sh-001&quot;,
+          &quot;ProductArn&quot;: &quot;arn:aws:securityhub:eu-west-1::product/aws/securityhub&quot;,
+          &quot;GeneratorId&quot;: &quot;security-control/S3.8&quot;,
+          &quot;AwsAccountId&quot;: &quot;444444444444&quot;,
+          &quot;Title&quot;: &quot;S3 bucket public access settings require review&quot;,
+          &quot;Severity&quot;: {
+            &quot;Label&quot;: &quot;HIGH&quot;
+          },
+          &quot;Compliance&quot;: {
+            &quot;Status&quot;: &quot;FAILED&quot;
+          },
+          &quot;RecordState&quot;: &quot;ACTIVE&quot;,
+          &quot;Resources&quot;: [
+            {
+              &quot;Type&quot;: &quot;AwsS3Bucket&quot;,
+              &quot;Id&quot;: &quot;arn:aws:s3:::fictional-governance-bucket&quot;
+            }
+          ]
+        }
+      ]
+    },
+    &quot;synthetic&quot;: true
+  },
+  &quot;exercise&quot;: {
+    &quot;finding_id&quot;: &quot;b3a0bc0a846968db04a7&quot;,
+    &quot;status&quot;: &quot;verified&quot;,
+    &quot;mode&quot;: &quot;simulation_only&quot;,
+    &quot;before&quot;: {
+      &quot;resource&quot;: &quot;arn:aws:s3:::fictional-governance-bucket&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;public_access_block&quot;: {
+        &quot;BlockPublicAcls&quot;: false,
+        &quot;IgnorePublicAcls&quot;: false,
+        &quot;BlockPublicPolicy&quot;: false,
+        &quot;RestrictPublicBuckets&quot;: false
+      },
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;after&quot;: {
+      &quot;resource&quot;: &quot;arn:aws:s3:::fictional-governance-bucket&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;public_access_block&quot;: {
+        &quot;BlockPublicAcls&quot;: true,
+        &quot;IgnorePublicAcls&quot;: true,
+        &quot;BlockPublicPolicy&quot;: true,
+        &quot;RestrictPublicBuckets&quot;: true
+      },
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;plan&quot;: {
+      &quot;playbook&quot;: &quot;block-public-s3&quot;,
+      &quot;resource&quot;: &quot;arn:aws:s3:::fictional-governance-bucket&quot;,
+      &quot;changes&quot;: {
+        &quot;public_access_block&quot;: {
+          &quot;BlockPublicAcls&quot;: true,
+          &quot;IgnorePublicAcls&quot;: true,
+          &quot;BlockPublicPolicy&quot;: true,
+          &quot;RestrictPublicBuckets&quot;: true
+        }
+      },
+      &quot;execution&quot;: &quot;simulation_only&quot;
+    },
+    &quot;history&quot;: [
+      {
+        &quot;step&quot;: &quot;new&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;triaged&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;approved&quot;,
+        &quot;actor&quot;: &quot;demo-independent-reviewer&quot;,
+        &quot;reason&quot;: &quot;Approved fictional training scenario&quot;,
+        &quot;approval_mode&quot;: &quot;fictional_training&quot;
+      },
+      {
+        &quot;step&quot;: &quot;simulated&quot;,
+        &quot;actor&quot;: &quot;offline-engine&quot;
+      },
+      {
+        &quot;step&quot;: &quot;verified&quot;,
+        &quot;actor&quot;: &quot;offline-verifier&quot;
+      }
+    ]
+  }
+}</pre></details></article><article class="medium"><small>MEDIUM / aws.config</small><h3>Required ownership and environment tags are missing</h3><p><strong>Resource:</strong> <code>i-00000000000000001</code></p><p><strong>Risk:</strong> Missing ownership metadata delays accountability and incident response.</p><p><strong>Response:</strong> Obtain approved Owner and Environment values and simulate adding the missing tags.</p><p><strong>Workflow:</strong> verified (simulation only)</p><details><summary>Evidence, approvals and before/after state</summary><pre>{
+  &quot;id&quot;: &quot;config-required-tags&quot;,
+  &quot;finding&quot;: {
+    &quot;id&quot;: &quot;89e3f402f4fb1f608083&quot;,
+    &quot;source&quot;: &quot;aws.config&quot;,
+    &quot;account_id&quot;: &quot;444444444444&quot;,
+    &quot;region&quot;: &quot;eu-west-1&quot;,
+    &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+    &quot;issue&quot;: &quot;Required ownership and environment tags are missing&quot;,
+    &quot;severity&quot;: &quot;medium&quot;,
+    &quot;risk&quot;: &quot;Missing ownership metadata delays accountability and incident response.&quot;,
+    &quot;remediation&quot;: &quot;Obtain approved Owner and Environment values and simulate adding the missing tags.&quot;,
+    &quot;playbook&quot;: &quot;apply-required-tags&quot;,
+    &quot;evidence&quot;: {
+      &quot;configRuleName&quot;: &quot;govlab-required-tags&quot;,
+      &quot;resourceId&quot;: &quot;i-00000000000000001&quot;,
+      &quot;resourceType&quot;: &quot;AWS::EC2::Instance&quot;,
+      &quot;newEvaluationResult&quot;: {
+        &quot;complianceType&quot;: &quot;NON_COMPLIANT&quot;
+      }
+    },
+    &quot;synthetic&quot;: true
+  },
+  &quot;exercise&quot;: {
+    &quot;finding_id&quot;: &quot;89e3f402f4fb1f608083&quot;,
+    &quot;status&quot;: &quot;verified&quot;,
+    &quot;mode&quot;: &quot;simulation_only&quot;,
+    &quot;before&quot;: {
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;tags&quot;: {
+        &quot;Environment&quot;: &quot;lab&quot;
+      },
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;after&quot;: {
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;account_id&quot;: &quot;444444444444&quot;,
+      &quot;tags&quot;: {
+        &quot;Environment&quot;: &quot;lab&quot;,
+        &quot;Owner&quot;: &quot;security-engineering&quot;
+      },
+      &quot;region&quot;: &quot;eu-west-1&quot;
+    },
+    &quot;plan&quot;: {
+      &quot;playbook&quot;: &quot;apply-required-tags&quot;,
+      &quot;resource&quot;: &quot;i-00000000000000001&quot;,
+      &quot;changes&quot;: {
+        &quot;tags&quot;: {
+          &quot;Environment&quot;: &quot;lab&quot;,
+          &quot;Owner&quot;: &quot;security-engineering&quot;
+        }
+      },
+      &quot;execution&quot;: &quot;simulation_only&quot;
+    },
+    &quot;history&quot;: [
+      {
+        &quot;step&quot;: &quot;new&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;triaged&quot;,
+        &quot;actor&quot;: &quot;demo-analyst&quot;
+      },
+      {
+        &quot;step&quot;: &quot;approved&quot;,
+        &quot;actor&quot;: &quot;demo-independent-reviewer&quot;,
+        &quot;reason&quot;: &quot;Approved fictional training scenario&quot;,
+        &quot;approval_mode&quot;: &quot;fictional_training&quot;
+      },
+      {
+        &quot;step&quot;: &quot;simulated&quot;,
+        &quot;actor&quot;: &quot;offline-engine&quot;
+      },
+      {
+        &quot;step&quot;: &quot;verified&quot;,
+        &quot;actor&quot;: &quot;offline-verifier&quot;
+      }
+    ]
+  }
+}</pre></details></article>
+<h2>Exercise errors</h2><pre>[]</pre>
+<footer>Local review artifact. Live AWS deployment and operational validation require separately authorised access.</footer></body></html>

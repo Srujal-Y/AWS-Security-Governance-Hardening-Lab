@@ -1,0 +1,9 @@
+management_account_id = "111111111111"
+home_region           = "eu-west-1"
+allowed_regions       = ["eu-west-1", "eu-central-1"]
+administrator_role_arns = [
+  "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+  "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+]
+# Bootstrap trusted administrator roles and security baselines before enforcement.
+enforce_guardrails = false

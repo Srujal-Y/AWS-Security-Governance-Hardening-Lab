@@ -1,0 +1,565 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "description": "Fictional five-account lab. No event or remediation result came from a live AWS account.",
+  "allowed_regions": [
+    "eu-west-1",
+    "eu-central-1"
+  ],
+  "administrator_role_arns": [
+    "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+    "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+  ],
+  "accounts": [
+    {
+      "id": "111111111111",
+      "name": "Management",
+      "ou": "Root"
+    },
+    {
+      "id": "222222222222",
+      "name": "Security",
+      "ou": "Security"
+    },
+    {
+      "id": "333333333333",
+      "name": "LogArchive",
+      "ou": "LogArchive"
+    },
+    {
+      "id": "444444444444",
+      "name": "Sandbox",
+      "ou": "Workloads"
+    },
+    {
+      "id": "555555555555",
+      "name": "ProductionModel",
+      "ou": "Workloads"
+    }
+  ],
+  "policy_cases": [
+    {
+      "id": "approved-region",
+      "request": {
+        "action": "ec2:RunInstances",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "outside-region",
+      "request": {
+        "action": "ec2:RunInstances",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "us-west-2",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "secondary-approved-region",
+      "request": {
+        "action": "s3:CreateBucket",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-central-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "global-iam",
+      "request": {
+        "action": "iam:ListRoles",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "us-east-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "global-route53",
+      "request": {
+        "action": "route53:ListHostedZones",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "us-east-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "deny-cloudtrail-stoplogging",
+      "request": {
+        "action": "cloudtrail:StopLogging",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-cloudtrail-deletetrail",
+      "request": {
+        "action": "cloudtrail:DeleteTrail",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-config-stopconfigurationrecorder",
+      "request": {
+        "action": "config:StopConfigurationRecorder",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-config-putconfigurationrecorder",
+      "request": {
+        "action": "config:PutConfigurationRecorder",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-guardduty-deletedetector",
+      "request": {
+        "action": "guardduty:DeleteDetector",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-guardduty-updatedetector",
+      "request": {
+        "action": "guardduty:UpdateDetector",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-securityhub-disablesecurityhub",
+      "request": {
+        "action": "securityhub:DisableSecurityHub",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-securityhub-batchdisablestandards",
+      "request": {
+        "action": "securityhub:BatchDisableStandards",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-kms-schedulekeydeletion",
+      "request": {
+        "action": "kms:ScheduleKeyDeletion",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "deny-kms-putkeypolicy",
+      "request": {
+        "action": "kms:PutKeyPolicy",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "approved-administrator-change",
+      "request": {
+        "action": "cloudtrail:UpdateTrail",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/GovernanceAdministrator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "administrator-still-region-restricted",
+      "request": {
+        "action": "cloudtrail:UpdateTrail",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "us-west-2",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/GovernanceAdministrator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "governance-trust-protected",
+      "request": {
+        "action": "iam:UpdateAssumeRolePolicy",
+        "resource": "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "governance-role-creation-protected",
+      "request": {
+        "action": "iam:CreateRole",
+        "resource": "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "workload-role-not-governance-role",
+      "request": {
+        "action": "iam:UpdateAssumeRolePolicy",
+        "resource": "arn:aws:iam::444444444444:role/WorkloadOperator",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "not_denied_by_lab_scps"
+    },
+    {
+      "id": "cannot-leave-organization",
+      "request": {
+        "action": "organizations:LeaveOrganization",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/GovernanceAdministrator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "root-access-key-blocked",
+      "request": {
+        "action": "iam:CreateAccessKey",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:root"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "management-outside-scp-scope",
+      "request": {
+        "action": "ec2:RunInstances",
+        "resource": "*",
+        "account_type": "management",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "us-west-2",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "outside_scp_scope"
+    },
+    {
+      "id": "service-linked-role-outside-scp-scope",
+      "request": {
+        "action": "guardduty:UpdateDetector",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": true,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "outside_scp_scope"
+    },
+    {
+      "id": "lookalike-admin-not-exempt",
+      "request": {
+        "action": "cloudtrail:StopLogging",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/GovernanceAdministratorLookalike"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "other-account-admin-not-exempt",
+      "request": {
+        "action": "cloudtrail:StopLogging",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::666666666666:role/GovernanceAdministrator"
+        }
+      },
+      "expected": "explicit_deny"
+    },
+    {
+      "id": "case-insensitive-actions",
+      "request": {
+        "action": "CLOUDTRAIL:STOPLOGGING",
+        "resource": "*",
+        "account_type": "member",
+        "service_linked_role": false,
+        "context": {
+          "aws:RequestedRegion": "eu-west-1",
+          "aws:PrincipalArn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+        }
+      },
+      "expected": "explicit_deny"
+    }
+  ],
+  "finding_cases": [
+    {
+      "id": "guardduty-containment",
+      "event": {
+        "id": "fictional-gd-001",
+        "source": "aws.guardduty",
+        "account": "444444444444",
+        "region": "eu-west-1",
+        "time": "2026-10-20T00:00:00Z",
+        "detail": {
+          "id": "fictional-gd-001",
+          "type": "UnauthorizedAccess:EC2/SSHBruteForce",
+          "severity": 8,
+          "resource": {
+            "instanceDetails": {
+              "instanceId": "i-00000000000000001"
+            }
+          },
+          "service": {
+            "additionalInfo": {
+              "sample": true
+            }
+          }
+        }
+      },
+      "before": {
+        "resource": "i-00000000000000001",
+        "account_id": "444444444444",
+        "security_group_ids": [
+          "sg-00000000000000001"
+        ],
+        "region": "eu-west-1"
+      },
+      "parameters": {
+        "quarantine_group_id": "sg-00000000000000002"
+      }
+    },
+    {
+      "id": "securityhub-public-access",
+      "event": {
+        "id": "fictional-sh-001",
+        "source": "aws.securityhub",
+        "account": "444444444444",
+        "region": "eu-west-1",
+        "time": "2026-10-20T00:00:00Z",
+        "detail": {
+          "findings": [
+            {
+              "SchemaVersion": "2018-10-08",
+              "Id": "fictional-sh-001",
+              "ProductArn": "arn:aws:securityhub:eu-west-1::product/aws/securityhub",
+              "GeneratorId": "security-control/S3.8",
+              "AwsAccountId": "444444444444",
+              "Title": "S3 bucket public access settings require review",
+              "Severity": {
+                "Label": "HIGH"
+              },
+              "Compliance": {
+                "Status": "FAILED"
+              },
+              "RecordState": "ACTIVE",
+              "Resources": [
+                {
+                  "Type": "AwsS3Bucket",
+                  "Id": "arn:aws:s3:::fictional-governance-bucket"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "before": {
+        "resource": "arn:aws:s3:::fictional-governance-bucket",
+        "account_id": "444444444444",
+        "public_access_block": {
+          "BlockPublicAcls": false,
+          "IgnorePublicAcls": false,
+          "BlockPublicPolicy": false,
+          "RestrictPublicBuckets": false
+        },
+        "region": "eu-west-1"
+      },
+      "parameters": {}
+    },
+    {
+      "id": "config-required-tags",
+      "event": {
+        "id": "fictional-config-001",
+        "source": "aws.config",
+        "account": "444444444444",
+        "region": "eu-west-1",
+        "time": "2026-10-20T00:00:00Z",
+        "detail": {
+          "configRuleName": "govlab-required-tags",
+          "resourceId": "i-00000000000000001",
+          "resourceType": "AWS::EC2::Instance",
+          "newEvaluationResult": {
+            "complianceType": "NON_COMPLIANT"
+          }
+        }
+      },
+      "before": {
+        "resource": "i-00000000000000001",
+        "account_id": "444444444444",
+        "tags": {
+          "Environment": "lab"
+        },
+        "region": "eu-west-1"
+      },
+      "parameters": {
+        "approved_tags": {
+          "Owner": "security-engineering",
+          "Environment": "lab"
+        }
+      }
+    },
+    {
+      "id": "cloudtrail-blocked-tamper",
+      "event": {
+        "id": "fictional-ct-001",
+        "source": "aws.cloudtrail",
+        "account": "444444444444",
+        "region": "eu-west-1",
+        "time": "2026-10-20T00:00:00Z",
+        "detail": {
+          "eventSource": "cloudtrail.amazonaws.com",
+          "eventName": "StopLogging",
+          "errorCode": "AccessDenied",
+          "userIdentity": {
+            "arn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+          },
+          "requestParameters": {
+            "name": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail"
+          }
+        }
+      },
+      "before": {
+        "resource": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail",
+        "account_id": "444444444444",
+        "logging_enabled": true,
+        "region": "eu-west-1"
+      },
+      "parameters": {}
+    }
+  ]
+}

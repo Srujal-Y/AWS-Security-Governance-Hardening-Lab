@@ -1,0 +1,5 @@
+log_archive_account_id = "333333333333"
+source_account_ids     = ["222222222222", "333333333333", "444444444444", "555555555555"]
+region                 = "eu-west-1"
+name_prefix            = "govlab"
+retention_days         = 90

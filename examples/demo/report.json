@@ -1,0 +1,755 @@
+{
+  "schema_version": "1.0",
+  "mode": "synthetic_offline",
+  "completed_at": "2026-10-20T17:11:21.641932+00:00",
+  "status": "passed",
+  "summary": {
+    "policy_total": 27,
+    "policy_passed": 27,
+    "response_total": 4,
+    "response_passed": 4
+  },
+  "accounts": [
+    {
+      "id": "111111111111",
+      "name": "Management",
+      "ou": "Root"
+    },
+    {
+      "id": "222222222222",
+      "name": "Security",
+      "ou": "Security"
+    },
+    {
+      "id": "333333333333",
+      "name": "LogArchive",
+      "ou": "LogArchive"
+    },
+    {
+      "id": "444444444444",
+      "name": "Sandbox",
+      "ou": "Workloads"
+    },
+    {
+      "id": "555555555555",
+      "name": "ProductionModel",
+      "ou": "Workloads"
+    }
+  ],
+  "policies": {
+    "region-restriction": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "DenyRequestsOutsideApprovedRegions",
+          "Effect": "Deny",
+          "NotAction": [
+            "iam:*",
+            "organizations:*",
+            "account:*",
+            "budgets:*",
+            "ce:*",
+            "cur:*",
+            "route53:*",
+            "route53domains:*",
+            "cloudfront:*",
+            "support:*",
+            "health:*",
+            "pricing:*"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "StringNotEquals": {
+              "aws:RequestedRegion": [
+                "eu-central-1",
+                "eu-west-1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "permissions-guardrails": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "DenySecurityControlTampering",
+          "Effect": "Deny",
+          "Action": [
+            "cloudtrail:StopLogging",
+            "cloudtrail:DeleteTrail",
+            "cloudtrail:UpdateTrail",
+            "cloudtrail:PutEventSelectors",
+            "cloudtrail:PutInsightSelectors",
+            "config:StopConfigurationRecorder",
+            "config:DeleteConfigurationRecorder",
+            "config:DeleteDeliveryChannel",
+            "config:DeleteConfigRule",
+            "config:PutConfigurationRecorder",
+            "config:PutDeliveryChannel",
+            "config:PutConfigRule",
+            "guardduty:DeleteDetector",
+            "guardduty:UpdateDetector",
+            "securityhub:DisableSecurityHub",
+            "securityhub:BatchDisableStandards",
+            "securityhub:UpdateStandardsControl",
+            "securityhub:BatchUpdateStandardsControlAssociations",
+            "securityhub:UpdateSecurityHubConfiguration"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "ArnNotEquals": {
+              "aws:PrincipalArn": [
+                "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+                "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+              ]
+            }
+          }
+        },
+        {
+          "Sid": "ProtectGovernanceAdministratorRoles",
+          "Effect": "Deny",
+          "Action": [
+            "iam:CreateRole",
+            "iam:DeleteRole",
+            "iam:UpdateAssumeRolePolicy",
+            "iam:AttachRolePolicy",
+            "iam:DetachRolePolicy",
+            "iam:PutRolePolicy",
+            "iam:DeleteRolePolicy",
+            "iam:PutRolePermissionsBoundary",
+            "iam:DeleteRolePermissionsBoundary",
+            "iam:PassRole",
+            "iam:TagRole",
+            "iam:UntagRole"
+          ],
+          "Resource": [
+            "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+            "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+          ],
+          "Condition": {
+            "ArnNotEquals": {
+              "aws:PrincipalArn": [
+                "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+                "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+              ]
+            }
+          }
+        },
+        {
+          "Sid": "DenyKeyDestructionWithoutGovernanceRole",
+          "Effect": "Deny",
+          "Action": [
+            "kms:DisableKey",
+            "kms:ScheduleKeyDeletion",
+            "kms:PutKeyPolicy"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "ArnNotEquals": {
+              "aws:PrincipalArn": [
+                "arn:aws:iam::444444444444:role/GovernanceAdministrator",
+                "arn:aws:iam::555555555555:role/GovernanceAdministrator"
+              ]
+            }
+          }
+        },
+        {
+          "Sid": "DenyMemberDeparture",
+          "Effect": "Deny",
+          "Action": "organizations:LeaveOrganization",
+          "Resource": "*"
+        },
+        {
+          "Sid": "DenyRootAccessKeyCreation",
+          "Effect": "Deny",
+          "Action": "iam:CreateAccessKey",
+          "Resource": "*",
+          "Condition": {
+            "ArnLike": {
+              "aws:PrincipalArn": "arn:aws:iam::*:root"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "policy_results": [
+    {
+      "id": "approved-region",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "outside-region",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "region-restriction/DenyRequestsOutsideApprovedRegions"
+      ],
+      "passed": true
+    },
+    {
+      "id": "secondary-approved-region",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "global-iam",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "global-route53",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "deny-cloudtrail-stoplogging",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-cloudtrail-deletetrail",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-config-stopconfigurationrecorder",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-config-putconfigurationrecorder",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-guardduty-deletedetector",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-guardduty-updatedetector",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-securityhub-disablesecurityhub",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-securityhub-batchdisablestandards",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-kms-schedulekeydeletion",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenyKeyDestructionWithoutGovernanceRole"
+      ],
+      "passed": true
+    },
+    {
+      "id": "deny-kms-putkeypolicy",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenyKeyDestructionWithoutGovernanceRole"
+      ],
+      "passed": true
+    },
+    {
+      "id": "approved-administrator-change",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "administrator-still-region-restricted",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "region-restriction/DenyRequestsOutsideApprovedRegions"
+      ],
+      "passed": true
+    },
+    {
+      "id": "governance-trust-protected",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/ProtectGovernanceAdministratorRoles"
+      ],
+      "passed": true
+    },
+    {
+      "id": "governance-role-creation-protected",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/ProtectGovernanceAdministratorRoles"
+      ],
+      "passed": true
+    },
+    {
+      "id": "workload-role-not-governance-role",
+      "expected": "not_denied_by_lab_scps",
+      "decision": "not_denied_by_lab_scps",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "cannot-leave-organization",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenyMemberDeparture"
+      ],
+      "passed": true
+    },
+    {
+      "id": "root-access-key-blocked",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenyRootAccessKeyCreation"
+      ],
+      "passed": true
+    },
+    {
+      "id": "management-outside-scp-scope",
+      "expected": "outside_scp_scope",
+      "decision": "outside_scp_scope",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "service-linked-role-outside-scp-scope",
+      "expected": "outside_scp_scope",
+      "decision": "outside_scp_scope",
+      "matched_statements": [],
+      "passed": true
+    },
+    {
+      "id": "lookalike-admin-not-exempt",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "other-account-admin-not-exempt",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    },
+    {
+      "id": "case-insensitive-actions",
+      "expected": "explicit_deny",
+      "decision": "explicit_deny",
+      "matched_statements": [
+        "permissions-guardrails/DenySecurityControlTampering"
+      ],
+      "passed": true
+    }
+  ],
+  "response_results": [
+    {
+      "id": "cloudtrail-blocked-tamper",
+      "finding": {
+        "id": "8f04efcbfdcd748aedf5",
+        "source": "aws.cloudtrail",
+        "account_id": "444444444444",
+        "region": "eu-west-1",
+        "resource": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail",
+        "issue": "An attempt to stop audit logging was denied",
+        "severity": "high",
+        "risk": "A blocked attempt can still indicate misuse of credentials or an incorrect change process.",
+        "remediation": "Verify continued logging, review the actor and denial reason, and preserve the event. A denial alone does not establish which policy caused it.",
+        "playbook": "verify-blocked-tamper",
+        "evidence": {
+          "eventSource": "cloudtrail.amazonaws.com",
+          "eventName": "StopLogging",
+          "errorCode": "AccessDenied",
+          "userIdentity": {
+            "arn": "arn:aws:iam::444444444444:role/WorkloadOperator"
+          },
+          "requestParameters": {
+            "name": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail"
+          }
+        },
+        "synthetic": true
+      },
+      "exercise": {
+        "finding_id": "8f04efcbfdcd748aedf5",
+        "status": "verified",
+        "mode": "simulation_only",
+        "before": {
+          "resource": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail",
+          "account_id": "444444444444",
+          "logging_enabled": true,
+          "region": "eu-west-1"
+        },
+        "after": {
+          "resource": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail",
+          "account_id": "444444444444",
+          "logging_enabled": true,
+          "region": "eu-west-1"
+        },
+        "plan": {
+          "playbook": "verify-blocked-tamper",
+          "resource": "arn:aws:cloudtrail:eu-west-1:444444444444:trail/govlab-trail",
+          "changes": {},
+          "execution": "simulation_only"
+        },
+        "history": [
+          {
+            "step": "new",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "triaged",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "approved",
+            "actor": "demo-independent-reviewer",
+            "reason": "Approved fictional training scenario",
+            "approval_mode": "fictional_training"
+          },
+          {
+            "step": "simulated",
+            "actor": "offline-engine"
+          },
+          {
+            "step": "verified",
+            "actor": "offline-verifier"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guardduty-containment",
+      "finding": {
+        "id": "16f2d47ab82ab1a32896",
+        "source": "aws.guardduty",
+        "account_id": "444444444444",
+        "region": "eu-west-1",
+        "resource": "i-00000000000000001",
+        "issue": "UnauthorizedAccess:EC2/SSHBruteForce",
+        "severity": "high",
+        "risk": "Suspected instance activity requires investigation and approved containment.",
+        "remediation": "Review the sample finding, preserve evidence, and simulate assigning the approved quarantine security group.",
+        "playbook": "quarantine-ec2",
+        "evidence": {
+          "id": "fictional-gd-001",
+          "type": "UnauthorizedAccess:EC2/SSHBruteForce",
+          "severity": 8,
+          "resource": {
+            "instanceDetails": {
+              "instanceId": "i-00000000000000001"
+            }
+          },
+          "service": {
+            "additionalInfo": {
+              "sample": true
+            }
+          }
+        },
+        "synthetic": true
+      },
+      "exercise": {
+        "finding_id": "16f2d47ab82ab1a32896",
+        "status": "verified",
+        "mode": "simulation_only",
+        "before": {
+          "resource": "i-00000000000000001",
+          "account_id": "444444444444",
+          "security_group_ids": [
+            "sg-00000000000000001"
+          ],
+          "region": "eu-west-1"
+        },
+        "after": {
+          "resource": "i-00000000000000001",
+          "account_id": "444444444444",
+          "security_group_ids": [
+            "sg-00000000000000002"
+          ],
+          "region": "eu-west-1"
+        },
+        "plan": {
+          "playbook": "quarantine-ec2",
+          "resource": "i-00000000000000001",
+          "changes": {
+            "security_group_ids": [
+              "sg-00000000000000002"
+            ]
+          },
+          "execution": "simulation_only"
+        },
+        "history": [
+          {
+            "step": "new",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "triaged",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "approved",
+            "actor": "demo-independent-reviewer",
+            "reason": "Approved fictional training scenario",
+            "approval_mode": "fictional_training"
+          },
+          {
+            "step": "simulated",
+            "actor": "offline-engine"
+          },
+          {
+            "step": "verified",
+            "actor": "offline-verifier"
+          }
+        ]
+      }
+    },
+    {
+      "id": "securityhub-public-access",
+      "finding": {
+        "id": "b3a0bc0a846968db04a7",
+        "source": "aws.securityhub",
+        "account_id": "444444444444",
+        "region": "eu-west-1",
+        "resource": "arn:aws:s3:::fictional-governance-bucket",
+        "issue": "S3 bucket public access settings require review",
+        "severity": "high",
+        "risk": "Unintended public bucket configuration can expose sensitive data.",
+        "remediation": "Confirm the bucket's purpose and simulate all four bucket Block Public Access settings.",
+        "playbook": "block-public-s3",
+        "evidence": {
+          "findings": [
+            {
+              "SchemaVersion": "2018-10-08",
+              "Id": "fictional-sh-001",
+              "ProductArn": "arn:aws:securityhub:eu-west-1::product/aws/securityhub",
+              "GeneratorId": "security-control/S3.8",
+              "AwsAccountId": "444444444444",
+              "Title": "S3 bucket public access settings require review",
+              "Severity": {
+                "Label": "HIGH"
+              },
+              "Compliance": {
+                "Status": "FAILED"
+              },
+              "RecordState": "ACTIVE",
+              "Resources": [
+                {
+                  "Type": "AwsS3Bucket",
+                  "Id": "arn:aws:s3:::fictional-governance-bucket"
+                }
+              ]
+            }
+          ]
+        },
+        "synthetic": true
+      },
+      "exercise": {
+        "finding_id": "b3a0bc0a846968db04a7",
+        "status": "verified",
+        "mode": "simulation_only",
+        "before": {
+          "resource": "arn:aws:s3:::fictional-governance-bucket",
+          "account_id": "444444444444",
+          "public_access_block": {
+            "BlockPublicAcls": false,
+            "IgnorePublicAcls": false,
+            "BlockPublicPolicy": false,
+            "RestrictPublicBuckets": false
+          },
+          "region": "eu-west-1"
+        },
+        "after": {
+          "resource": "arn:aws:s3:::fictional-governance-bucket",
+          "account_id": "444444444444",
+          "public_access_block": {
+            "BlockPublicAcls": true,
+            "IgnorePublicAcls": true,
+            "BlockPublicPolicy": true,
+            "RestrictPublicBuckets": true
+          },
+          "region": "eu-west-1"
+        },
+        "plan": {
+          "playbook": "block-public-s3",
+          "resource": "arn:aws:s3:::fictional-governance-bucket",
+          "changes": {
+            "public_access_block": {
+              "BlockPublicAcls": true,
+              "IgnorePublicAcls": true,
+              "BlockPublicPolicy": true,
+              "RestrictPublicBuckets": true
+            }
+          },
+          "execution": "simulation_only"
+        },
+        "history": [
+          {
+            "step": "new",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "triaged",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "approved",
+            "actor": "demo-independent-reviewer",
+            "reason": "Approved fictional training scenario",
+            "approval_mode": "fictional_training"
+          },
+          {
+            "step": "simulated",
+            "actor": "offline-engine"
+          },
+          {
+            "step": "verified",
+            "actor": "offline-verifier"
+          }
+        ]
+      }
+    },
+    {
+      "id": "config-required-tags",
+      "finding": {
+        "id": "89e3f402f4fb1f608083",
+        "source": "aws.config",
+        "account_id": "444444444444",
+        "region": "eu-west-1",
+        "resource": "i-00000000000000001",
+        "issue": "Required ownership and environment tags are missing",
+        "severity": "medium",
+        "risk": "Missing ownership metadata delays accountability and incident response.",
+        "remediation": "Obtain approved Owner and Environment values and simulate adding the missing tags.",
+        "playbook": "apply-required-tags",
+        "evidence": {
+          "configRuleName": "govlab-required-tags",
+          "resourceId": "i-00000000000000001",
+          "resourceType": "AWS::EC2::Instance",
+          "newEvaluationResult": {
+            "complianceType": "NON_COMPLIANT"
+          }
+        },
+        "synthetic": true
+      },
+      "exercise": {
+        "finding_id": "89e3f402f4fb1f608083",
+        "status": "verified",
+        "mode": "simulation_only",
+        "before": {
+          "resource": "i-00000000000000001",
+          "account_id": "444444444444",
+          "tags": {
+            "Environment": "lab"
+          },
+          "region": "eu-west-1"
+        },
+        "after": {
+          "resource": "i-00000000000000001",
+          "account_id": "444444444444",
+          "tags": {
+            "Environment": "lab",
+            "Owner": "security-engineering"
+          },
+          "region": "eu-west-1"
+        },
+        "plan": {
+          "playbook": "apply-required-tags",
+          "resource": "i-00000000000000001",
+          "changes": {
+            "tags": {
+              "Environment": "lab",
+              "Owner": "security-engineering"
+            }
+          },
+          "execution": "simulation_only"
+        },
+        "history": [
+          {
+            "step": "new",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "triaged",
+            "actor": "demo-analyst"
+          },
+          {
+            "step": "approved",
+            "actor": "demo-independent-reviewer",
+            "reason": "Approved fictional training scenario",
+            "approval_mode": "fictional_training"
+          },
+          {
+            "step": "simulated",
+            "actor": "offline-engine"
+          },
+          {
+            "step": "verified",
+            "actor": "offline-verifier"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

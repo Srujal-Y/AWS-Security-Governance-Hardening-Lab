@@ -1,0 +1,11 @@
+include README.md SECURITY.md LICENSE requirements.txt requirements-dev.txt
+recursive-include docs *.md
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include infra *.tf *.hcl *.example
+recursive-include examples *.json *.md *.html
+recursive-include src/governance_lab/data *.json
+recursive-include src/governance_lab/policies *.tftpl
+prune infra/organization/.terraform
+prune infra/log-archive/.terraform
+prune infra/account-baseline/.terraform

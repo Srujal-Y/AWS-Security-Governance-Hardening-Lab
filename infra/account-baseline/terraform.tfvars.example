@@ -1,0 +1,7 @@
+account_id         = "444444444444"
+region             = "eu-west-1"
+name_prefix        = "govlab"
+audit_bucket_name  = "govlab-audit-333333333333-eu-west-1"
+audit_kms_key_arn  = "arn:aws:kms:eu-west-1:333333333333:key/00000000-0000-0000-0000-000000000000"
+primary_region    = true
+security_operator_role_arn = "arn:aws:iam::222222222222:role/GovernanceOperator"

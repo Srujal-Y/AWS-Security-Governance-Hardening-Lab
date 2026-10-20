@@ -1,0 +1,32 @@
+{
+  "recorded_at": "2026-10-20T17:09:58.544984+00:00",
+  "platform": "Windows",
+  "python": "3.14.2",
+  "scope": "Offline Python exercises and Terraform mock-provider plans",
+  "tests": {
+    "tests": 101,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "combined_coverage_percent": 98.64,
+  "terraform_mock_runs_passed": 10,
+  "terraform_stacks_validated": [
+    "organization",
+    "log-archive",
+    "account-baseline"
+  ],
+  "live_aws_deployment": "not_performed",
+  "hosted_ci": "not_run",
+  "runtime_dependency_audit": {
+    "packages_checked": 12,
+    "known_vulnerabilities": 0
+  },
+  "installed_wheel_smoke_test": "Passed outside source directory; imported installed site-packages copy",
+  "demo_summary": {
+    "policy_total": 27,
+    "policy_passed": 27,
+    "response_total": 4,
+    "response_passed": 4
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allowed_regions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2}(?:-[a-z]+)+-\\d+$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "administrator_role_arns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-9]{12}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ou": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "ou"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "policy_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "minLength": 1
+              },
+              "resource": {
+                "type": "string",
+                "minLength": 1
+              },
+              "account_type": {
+                "enum": [
+                  "management",
+                  "member"
+                ]
+              },
+              "service_linked_role": {
+                "type": "boolean"
+              },
+              "context": {
+                "type": "object",
+                "properties": {
+                  "aws:RequestedRegion": {
+                    "type": "string",
+                    "pattern": "^[a-z]{2}(?:-[a-z]+)+-\\d+$"
+                  },
+                  "aws:PrincipalArn": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "aws:RequestedRegion",
+                  "aws:PrincipalArn"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "action",
+              "resource",
+              "account_type",
+              "service_linked_role",
+              "context"
+            ],
+            "additionalProperties": false
+          },
+          "expected": {
+            "enum": [
+              "explicit_deny",
+              "not_denied_by_lab_scps",
+              "outside_scp_scope"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "request",
+          "expected"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "finding_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source": {
+                "enum": [
+                  "aws.guardduty",
+                  "aws.securityhub",
+                  "aws.config",
+                  "aws.cloudtrail"
+                ]
+              },
+              "account": {
+                "type": "string",
+                "pattern": "^[0-9]{12}$"
+              },
+              "region": {
+                "type": "string",
+                "pattern": "^[a-z]{2}(?:-[a-z]+)+-\\d+$"
+              },
+              "time": {
+                "type": "string",
+                "minLength": 1
+              },
+              "detail": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "source",
+              "account",
+              "region",
+              "time",
+              "detail"
+            ],
+            "additionalProperties": true
+          },
+          "before": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "minLength": 1
+              },
+              "account_id": {
+                "type": "string",
+                "pattern": "^[0-9]{12}$"
+              },
+              "region": {
+                "type": "string",
+                "pattern": "^[a-z]{2}(?:-[a-z]+)+-\\d+$"
+              }
+            },
+            "required": [
+              "resource",
+              "account_id",
+              "region"
+            ],
+            "additionalProperties": true
+          },
+          "parameters": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "event",
+          "before",
+          "parameters"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "synthetic",
+    "description",
+    "allowed_regions",
+    "administrator_role_arns",
+    "accounts",
+    "policy_cases",
+    "finding_cases"
+  ],
+  "additionalProperties": false
+}
