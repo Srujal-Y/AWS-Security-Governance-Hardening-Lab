@@ -15,12 +15,14 @@ Recorded **20 October 2026**. Local environment: Windows, Python 3.14.2, Terrafo
 | Runtime dependency advisory audit | 12 applicable packages checked; no known vulnerabilities reported |
 | Package build | Source archive and wheel built successfully |
 | Installed-wheel smoke test | Passed from outside the source directory; loaded the installed package |
-| Hosted GitHub Actions | Configured; not run or published for this project |
+| Hosted GitHub Actions | **Passed on Python 3.11 and 3.14**, including Terraform mock tests, dependency audits, builds and installed-wheel checks |
 | Live AWS deployment | Not performed |
 | Real SCP enforcement / log delivery / generated AWS findings | Not tested in an AWS account |
 | Independent security or bank approval | Not performed or claimed |
 
-See the [machine-readable record](../examples/validation/results.json) and [fictional report](../examples/demo/report.md). The dependency advisory result is time-specific and covers the Python 3.14 runtime environment; the conditional Python 3.11 dependency will be checked in the configured 3.11 CI job.
+See the [machine-readable record](../examples/validation/results.json) and [fictional report](../examples/demo/report.md). Dependency advisory results are time-specific; the hosted audits also passed for the Python 3.11 and 3.14 runtime environments, including the conditional Python 3.11 dependency.
+
+Hosted evidence: [successful CI run on 20 October 2026](https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab/actions/runs/39465285504), commit `74e5bceb01b93e2adf9d1f32071ebb41b7b52d44`. Both Ubuntu jobs passed with Terraform 1.15.8 and AWS provider 6.69.1. Uploaded artifacts contain the test logs, coverage, fictional reports and distributions.
 
 ## Reproduction
 

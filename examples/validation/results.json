@@ -17,7 +17,13 @@
     "account-baseline"
   ],
   "live_aws_deployment": "not_performed",
-  "hosted_ci": "not_run",
+  "hosted_ci": {
+    "status": "success",
+    "python_versions": ["3.11", "3.14"],
+    "terraform_version": "1.15.8",
+    "commit": "74e5bceb01b93e2adf9d1f32071ebb41b7b52d44",
+    "run_url": "https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab/actions/runs/39465285504"
+  },
   "runtime_dependency_audit": {
     "packages_checked": 12,
     "known_vulnerabilities": 0

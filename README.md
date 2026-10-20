@@ -12,6 +12,8 @@ The lab separates **preventative controls** (SCPs), **audit evidence** (CloudTra
 
 Local validation: **101 Python tests passed · 98.64% coverage · 10 Terraform mock tests passed**. Full evidence and remaining live checks are in [VALIDATION.md](docs/VALIDATION.md).
 
+Hosted validation: [passed on Python 3.11 and 3.14 with Terraform 1.15.8](https://github.com/Srujal-Y/AWS-Security-Governance-Hardening-Lab/actions/runs/39465285504), including tests, dependency audits, packaging and installed-wheel smoke checks.
+
 ## What is implemented
 
 | Area | Implementation |
@@ -156,7 +158,7 @@ terraform -chdir=infra/account-baseline init -backend=false -input=false
 
 The verification command runs lint, Python tests, Terraform formatting/validation/mock tests, packaging and the offline demo. Terraform providers must first be initialised in all three roots; see the deployment guide's offline validation section.
 
-CI is configured for credential-free Python checks and Terraform mock-provider tests. Hosted CI and real AWS validation are only claimed when separately recorded in [VALIDATION.md](docs/VALIDATION.md).
+CI runs credential-free Python checks and Terraform mock-provider tests. The provider lock files include signed package checksums for Windows and Linux. The successful hosted run and pending live AWS checks are recorded in [VALIDATION.md](docs/VALIDATION.md).
 
 ## Guides and evidence
 
